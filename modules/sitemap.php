@@ -1,0 +1,2622 @@
+<?php
+require_once("modules/home.php");  
+
+class sitemap extends home
+{
+	public function main()
+	{
+			@session_start();
+			$db = new db();
+			$db2 = new db();
+			$db3 = new db();
+			
+         $_SESSION['pagina'] = "home";
+         $_SESSION['titulo_pagina'] = "Mapa do Site";
+         
+         $xmlFinal = '<ul class="list-doc" style="list-style-type:none">';
+
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'"><i class="material-icons">folder</i> Home</a>';
+            $xmlFinal .= '</li>';
+         
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'pesquisa"><i class="material-icons">folder</i> Pesquisa</a>';
+            $xmlFinal .= '</li>';
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'artigos"><i class="material-icons">folder</i> Artigos</a>';
+            $xmlFinal .= '</li>';
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'cadastro"><i class="material-icons">folder</i> Cadastre-se</a>';
+            $xmlFinal .= '</li>';
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'contato"><i class="material-icons">folder</i> Contato</a>';
+            $xmlFinal .= '</li>';
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'licenca"><i class="material-icons">folder</i> Licen&ccedil;a</a>';
+            $xmlFinal .= '</li>';
+
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'termosdeuso"><i class="material-icons">folder</i> Termos de Uso</a>';
+            $xmlFinal .= '</li>';
+            
+            $xmlFinal .= '<li>';
+            $xmlFinal .= '<a href="'.ABS_LINK.'livros"><i class="material-icons">folder</i> Livros</a>';
+
+            $xmlFinal .= '<ul class="list-doc" style="list-style-type:none">';
+            
+            $sql = "SELECT liv_id, liv_nome, liv_abreviado FROM livros ORDER BY liv_posicao ASC";
+            $db->query($sql,__LINE__,__FILE__);
+            $db->next_record();
+
+            for($i = 0; $i < $db->num_rows(); $i++)
+            {
+               $xmlFinal .= '<li>';
+               $xmlFinal .= '<a href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'"><i class="material-icons">folder</i> '.$db->f("liv_nome").'</a>';
+
+                  $xmlFinal .= '<ul class="list-doc" style="list-style-type:none">';
+
+                  $sql2 = "SELECT ver_capitulo FROM versiculos
+                         WHERE ver_liv_id = ".$db->f("liv_id")." AND ver_vrs_id = 1 
+                         GROUP BY ver_capitulo ORDER BY ver_capitulo ASC";
+                  $db2->query($sql2,__LINE__,__FILE__);
+                  $db2->next_record();
+
+                  for($i2 = 0; $i2 < $db2->num_rows(); $i2++)
+                  {
+
+                     $xmlFinal .= '<li>';
+                     $xmlFinal .= '<a href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'/'.$db2->f("ver_capitulo").'"><i class="material-icons">folder</i> '.$db->f("liv_nome").'/'.$db2->f("ver_capitulo").'</a>';
+                     $xmlFinal .= '</li>';
+                     
+                     $db2->next_record();
+                  }
+
+                  $xmlFinal .= '</ul>';
+
+
+
+               $xmlFinal .= '</li>';
+
+               $db->next_record();
+            }
+            
+            $xmlFinal .= '</ul>';
+
+            $xmlFinal .= '</li>';
+
+            
+         $xmlFinal .= '</ul>';
+
+               $sql = "SELECT artigos.titulo AS titulo, 
+                       artigos.slug AS slug, 
+                       DATE_FORMAT(artigos.dataCadastro,'%d/%m/%Y') as dataCadastro, 
+                       artigos_categorias.titulo AS categoria, 
+                       usuarios.nome AS nome_usuario 
+                       FROM artigos, artigos_categorias, usuarios 
+                       WHERE artigos.categoria_id = artigos_categorias.id 
+                       AND artigos.usuario_id = usuarios.id 
+                       ORDER BY artigos.id DESC LIMIT 0,5";
+                  $db->query($sql,__LINE__,__FILE__);
+                  $db->next_record();
+
+                  for($i = 0; $i < $db->num_rows(); $i++)
+                  {
+                     
+                     $titulo2 = $db->f('titulo');
+                     $slug2 = $db->f('slug');
+                     $dataCadastro2 = $db->f('dataCadastro');
+                     $categoria2 = $db->f('categoria');
+                     $nome_usuario2 = $db->f('nome_usuario');
+                     
+                     $listagem_artigos_recentes .= '<div class="list-group-item">
+                                                        <div class="row-topic">
+                                                            <header class="topic-title clearfix">
+                                                                <h3><a href="'.ABS_LINK.'artigos/artigo/'.$slug2.'">'.$titulo2.'</a></h3>
+                                                                <small>Em '.$categoria2.'</small>
+                                                                <small>'.$dataCadastro2.'</small>
+                                                                <small>por '.$nome_usuario2.'</small>
+                                                            </header>
+                                                        </div>
+                                                    </div><div class="list-group-separator"></div>';
+                     
+                     $db->next_record();
+                  }
+            
+         
+         
+			$this->cabecalho();                                                                            
+			$GLOBALS["base"]->template = new template();
+			$GLOBALS["base"]->template->set_var('listagem_artigos_recentes',$listagem_artigos_recentes);
+			$GLOBALS["base"]->template->set_var('xml',$xmlFinal);
+		   $GLOBALS["base"]->write_design_specific('sitemap.tpl' , 'main');
+			$GLOBALS["base"]->template = new template();
+			$this->footer();
+	}
+   function dynSitemap()
+   {
+  			@session_start();
+			$db = new db();
+
+            header("Content-Type: application/xml; charset=UTF-8");
+            echo '<?xml version="1.0" encoding="UTF-8"?>';
+            $hoje = date('Y-m-d');
+            echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">';
+            
+            
+            echo '<url>
+  <loc>https://www.bibliaparacasais.com.br/</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/home</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/pesquisa</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/artigos</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/cadastro</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dn/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/37</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/39</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/40</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/41</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/42</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/43</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/44</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gn/45</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex/34</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/nm/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/nm/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/js/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/js/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/js/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/js/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jz/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jz/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jz/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jz/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rt/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rt/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rt/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rt/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1sm/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1sm/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1sm/17</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/17</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dn/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/26</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/27</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/23</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/28</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/24</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/17</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/25</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/27</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/28</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ex</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lv</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/nm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dt</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/js</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jz</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rt</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1sm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2sm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1cr</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ed</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ne</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ec</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dn</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/os</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jl</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/am</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ob</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jn</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mq</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/na</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hc</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sf</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ag</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/zc</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ml</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gl</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fp</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/cl</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1ts</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2ts</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1tm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2tm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tt</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fm</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tg</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2pe</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1jo</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2jo</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/3jo</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jd</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/termosdeuso</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/licenca</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/contato</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jd/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/3jo/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2jo/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1jo/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1jo/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1jo/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1jo/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2pe/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1pe/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tg/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fm/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tt/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tt/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2tm/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2tm/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2tm/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1tm/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1tm/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1tm/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1tm/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2ts/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2ts/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2ts/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1ts/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1ts/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1ts/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1ts/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/cl/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/cl/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/cl/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fp/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fp/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fp/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ef/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gl/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/23</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/17</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/17</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/24</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mt/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ml/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sf/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sf/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/am/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/os/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/os/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/os/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/os/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dn/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/36</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/33</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/23</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lm/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/51</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/49</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/48</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/46</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/31</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/65</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/63</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/62</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/55</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/49</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/48</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/45</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/43</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/42</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/37</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/30</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/24</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ct/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ec/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/27</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/21</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/145</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/144</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ap/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2pe/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tg/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tg/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/hb/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/tt/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/fp/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gl/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/gl/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2co/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1co/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/rm/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/24</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/at/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jo/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/lc/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mc/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ml/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/zc/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/zc/8</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/zc/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ag/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/na/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mq/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/mq/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ob/1</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/dn/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/37</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/34</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/28</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/13</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ez/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/43</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/38</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/34</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/33</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/30</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/29</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/28</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/23</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/jr/6</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/66</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/59</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/57</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/54</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/53</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/52</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/39</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/38</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/36</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/33</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/32</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/27</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/26</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/is/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ec/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/16</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/pv/3</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/147</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/128</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/125</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/122</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/120</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/119</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/85</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/72</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/55</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/37</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/35</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/34</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/29</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/28</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/7</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/sl/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/et/10</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ed/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ed/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/ed/4</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/34</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/23</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/15</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/14</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2cr/2</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1cr/26</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1cr/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1cr/19</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1cr/12</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/18</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/11</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/9</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/2rs/5</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/22</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/livros/livro/1rs/20</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=amor</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=paz</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=fe</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=cura</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=casamento</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=ressurreicao</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=medo</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=forca</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=esperanca</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=ansiedade</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=perdao</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=alegria</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=criancas</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=confianca</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=oracao</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=graca</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=sabedoria</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=preocupacao</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=raiva</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.bibliaparacasais.com.br/index.php?module=pesquisa&amp;method=main&amp;tipo=biblia&amp;q=santo+espirito</loc>
+  <lastmod>2019-06-08T15:12:48+00:00</lastmod>
+  <priority>0.80</priority>
+</url>';
+            
+            
+
+            $sql = "SELECT titulo, slug, DATE_FORMAT(dataCadastro,'%Y-%m-%d') AS dataCadastro FROM artigos 
+                  ORDER BY id DESC";
+            $db->query($sql,__LINE__,__FILE__);
+            $db->next_record();
+
+            for($i = 0; $i < $db->num_rows(); $i++)
+            {
+               $link = "https://www.bibliaparacasais.com.br/artigos/artigo".$db->f("slug");
+               
+                echo '<url>';
+                echo '<loc>'.$link.'</loc>';
+                echo '<lastmod>'.$hoje.'</lastmod>';
+                echo '<changefreq>daily</changefreq>';
+                echo '<priority>0.6</priority>';
+                echo '</url>';
+               
+                $db->next_record();
+
+            }
+                
+                
+           echo '</urlset>';
+
+         
+   }
+   
+}
+	
+   ?>

@@ -1,0 +1,49 @@
+RewriteEngine On
+RewriteRule ^sitemap\.xml$ /index.php?module=sitemap&method=dynSitemap [L]
+#aqui criamos uma condicao para que os arquivos sejam ignorados nas regras abaixo
+    RewriteCond %{REQUEST_FILENAME} !-f
+  #aqui criamos uma condicao para que diretorios sejam ignorados nas regras abaixo
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+
+RewriteRule ^acf\/([0-9-a-z]+)$ index.php?module=acf&method=livro&id=$1 [NC,L]
+RewriteRule ^acf\/([0-9-a-z]+)\/([0-9-a-z]+)$ acf/livro/$1/$2 [NC,L]
+
+RewriteRule ^aa\/([0-9-a-z]+)$ index.php?module=aa&method=livro&id=$1 [NC,L]
+RewriteRule ^aa\/([0-9-a-z]+)\/([0-9-a-z]+)$ aa/livro/$1/$2 [NC,L]
+
+RewriteRule ^nvi\/([0-9-a-z]+)$ index.php?module=nvi&method=livro&id=$1 [NC,L]
+RewriteRule ^nvi\/([0-9-a-z]+)\/([0-9-a-z]+)$ nvi/livro/$1/$2 [NC,L]
+
+RewriteRule ^tb\/([0-9-a-z]+)$ index.php?module=tb&method=livro&id=$1 [NC,L]
+RewriteRule ^tb\/([0-9-a-z]+)\/([0-9-a-z]+)$ tb/livro/$1/$2 [NC,L]
+
+RewriteRule ^ol\/([0-9-a-z]+)$ index.php?module=ol&method=livro&id=$1 [NC,L]
+RewriteRule ^ol\/([0-9-a-z]+)\/([0-9-a-z]+)$ ol/livro/$1/$2 [NC,L]
+
+RewriteRule ^asv\/([0-9-a-z]+)$ index.php?module=asv&method=livro&id=$1 [NC,L]
+RewriteRule ^asv\/([0-9-a-z]+)\/([0-9-a-z]+)$ asv/livro/$1/$2 [NC,L]
+
+RewriteRule ^kjv\/([0-9-a-z]+)$ index.php?module=kjv&method=livro&id=$1 [NC,L]
+RewriteRule ^kjv\/([0-9-a-z]+)\/([0-9-a-z]+)$ kjv/livro/$1/$2 [NC,L]
+
+
+RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3&subid=$4 [NC,L]
+RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3 [NC,L]
+RewriteRule ^([a-z]+)\/([a-z]+)$ index.php?module=$1&method=$2 [NC,L]
+
+
+
+
+# Quando na URL chamado so um parametro (/livros, /contato) carrega por padrao o metodo main de toda classe
+RewriteRule ^([a-z]+)\/?$ index.php?module=$1&method=main [NC,L]
+
+
+# Quando acessar diretamente sem passar par�metros, carrega a p�gina inicial
+RewriteRule ^$ index.php?module=home&method=main [QSA,L,NC]
+# php -- BEGIN cPanel-generated handler, do not edit
+# Defina o pacote “ea-php56” como a linguagem padrão de programação “PHP”.
+<IfModule mime_module>
+  AddType application/x-httpd-ea-php56 .php .php5 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

@@ -1,0 +1,18 @@
+RewriteEngine On
+
+#aqui criamos uma condi��o para que os arquivos sejam ignorados nas regras abaixo
+    RewriteCond %{REQUEST_FILENAME} !-f
+  #aqui criamos uma condi��o para que diret�rios sejam ignorados nas regras abaixo
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3&subid=$4 [NC,L]
+RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3 [NC,L]
+RewriteRule ^([a-z]+)\/([a-z]+)$ index.php?module=$1&method=$2 [NC,L]
+
+
+# Quando na URL � chamado s� um parametro (/livros, /contato) carrega por padr�o o m�todo main de toda classe
+RewriteRule ^([a-z]+)\/?$ index.php?module=$1&method=main [NC,L]
+
+
+# Quando acessar diretamente sem passar par�metros, carrega a p�gina inicial
+RewriteRule ^$ index.php?module=home&method=main [QSA,L,NC]
