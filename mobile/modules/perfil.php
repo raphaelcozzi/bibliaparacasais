@@ -745,6 +745,7 @@ require_once("modules/home.php");
          $tags = $this->blockrequest($_REQUEST['tags']);
          $conteudo = $_REQUEST['conteudo'];
          $slug = $this->slugify($titulo);
+         
 
          
          $sql = "INSERT INTO artigos (titulo,

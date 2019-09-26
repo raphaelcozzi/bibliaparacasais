@@ -51,7 +51,8 @@ class artigos extends home
                        usuarios.nome AS nome_usuario 
                        FROM artigos, artigos_categorias, usuarios 
                        WHERE artigos.categoria_id = artigos_categorias.id 
-                       AND artigos.usuario_id = usuarios.id 
+                       AND artigos.usuario_id = usuarios.id
+                       AND artigos.status = 1
                        ORDER BY artigos.id DESC LIMIT ".$inicio.",".$limite." ";
                   $db->query($sql,__LINE__,__FILE__);
                   $db->next_record();
@@ -67,6 +68,8 @@ class artigos extends home
                      $categoria = $db->f('categoria');
                      $nome_usuario = $db->f('nome_usuario');
                      $conteudo = $db->f('conteudo');
+                     $conteudo = str_replace("<p><br></p>","",$conteudo);
+
                      $categoria_id = $db->f('categoria_id');
                      $tags = $db->f('tags');
                      
@@ -219,6 +222,7 @@ class artigos extends home
                      $categoria = $db->f('categoria');
                      $nome_usuario = $db->f('nome_usuario');
                      $conteudo = $db->f('conteudo');
+                     $conteudo = str_replace("<p>", '<p class="versiculo">', $conteudo);
                      $cateogira_id = $db->f('cateogira_id');
                      $autor = $db->f('autor');
                      $total_curtidas = $db->f('total_curtidas');
@@ -468,7 +472,14 @@ class artigos extends home
                                                   <small>em <a href="javascript:void(0)">'.$categoria.'</a></small>
                                                   <small>por <a href="javascript:void(0)"> '.$nome_usuario.'</a></small>
                                               </div>
-                                              <p> '.substr($conteudo,0,226).'...</p>
+                                              <p>';
+                                          
+                                          $listagem_artigos .= substr($conteudo,0,226);
+                                          
+                                          if(strlen($conteudo) > 226)
+                                             $listagem_artigos .='(...)';
+                                                  
+                                       $listagem_artigos .='</p>
                                               <a href="'.ABS_LINK.'artigos/artigo/'.$slug.'" class="readmore" title="">Continuar lendo &rightarrow;</a>
                                           </div>
                                       </div>

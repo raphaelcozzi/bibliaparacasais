@@ -106,7 +106,8 @@ class home
                        usuarios.nome AS nome_usuario 
                        FROM artigos, artigos_categorias, usuarios 
                        WHERE artigos.categoria_id = artigos_categorias.id 
-                       AND artigos.usuario_id = usuarios.id 
+                       AND artigos.usuario_id = usuarios.id
+                       AND artigos.status = 1
                        ORDER BY artigos.id DESC LIMIT 0,3";
                   $db->query($sql,__LINE__,__FILE__);
                   $db->next_record();
@@ -124,6 +125,7 @@ class home
                      $conteudo = $db->f('conteudo');
                      $categoria_id = $db->f('categoria_id');
                      $tags = $db->f('tags');
+                     $conteudo = str_replace("<p><br></p>","",$conteudo);
                      
                      $tags = explode(",",$tags);
 
@@ -144,8 +146,13 @@ class home
 
                      $listagem_artigos_recentes .= '<h5 class="thin center-text">
                               <a href="'.ABS_LINK.'artigos/artigo/'.$slug.'"> <strong>'.$titulo.'</strong></a>
-                           </h5><small>'.substr($conteudo,0,226).'...</small>
-                           <br><br>
+                           </h5><small>'.substr($conteudo,0,226);
+                              
+
+                           if(strlen($conteudo) > 226)
+                              $listagem_artigos_recentes .='(...)';
+
+                           $listagem_artigos_recentes .='</small><br><br>
                            <small>Em '.$dataCadastro.' | '.$total_comentarios.' Comentários | em '.$categoria.' | por '.$nome_usuario.'</small>';
                             
                      if($db->f("tags") != "")

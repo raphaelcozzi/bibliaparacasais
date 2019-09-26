@@ -18,7 +18,7 @@ class livros extends home
 		$db->next_record();
 		for($i = 0; $i < $db->num_rows(); $i++)
 		{
-         $velho_testamento .= '<li><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'\';" href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'">'.$db->f("liv_nome").'<i class="fa fa-angle-right"></i></a></li>';
+         $velho_testamento .= '<li class="versiculo"><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'\';" href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'">'.$db->f("liv_nome").'<i class="fa fa-angle-right"></i></a></li>';
          
    		$db->next_record();
       }
@@ -29,7 +29,7 @@ class livros extends home
 		for($i = 0; $i < $db->num_rows(); $i++)
 		{
          
-         $novo_testamento .= '<li><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'\';" href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'">'.$db->f("liv_nome").'<i class="fa fa-angle-right"></i></a></li>';
+         $novo_testamento .= '<li class="versiculo"><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'\';" href="'.ABS_LINK.'livros/livro/'.$db->f("liv_abreviado").'">'.$db->f("liv_nome").'<i class="fa fa-angle-right"></i></a></li>';
          
          
    		$db->next_record();
@@ -95,7 +95,7 @@ class livros extends home
 
             $ver_capitulo = $db->f("ver_capitulo");
 
-            $listagem_capitulos .= '<li><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$liv_abreviado.'/'.$ver_capitulo.'\'" href="'.ABS_LINK.'livros/livro/'.$liv_abreviado.'/'.$ver_capitulo.'">'.  $liv_nome_titulo.' '.$ver_capitulo.'<i class="fa fa-angle-right"></i></a></li>';
+            $listagem_capitulos .= '<li class="versiculo"><a onClick="javascript:location=\''.ABS_LINK.'livros/livro/'.$liv_abreviado.'/'.$ver_capitulo.'\'" href="'.ABS_LINK.'livros/livro/'.$liv_abreviado.'/'.$ver_capitulo.'">'.  $liv_nome_titulo.' '.$ver_capitulo.'<i class="fa fa-angle-right"></i></a></li>';
                
 
             $db->next_record();
@@ -173,7 +173,7 @@ class livros extends home
 
          for($i = 0; $i < $db->num_rows(); $i++)
          {
-            $listagem_versiculos .= '<li>'.$db->f('ver_versiculo').' '.$db->f('ver_texto').'<div style="float:right;"><a href="#" data-menu="menu-share'.$i.'" class="header-icon header-icon-1"><i class="fa fa-share-alt"></i></a></div></li>';
+            $listagem_versiculos .= '<li class="versiculo">'.$db->f('ver_versiculo').' '.$db->f('ver_texto').'<div style="float:right;"><a href="#" data-menu="menu-share'.$i.'" class="header-icon header-icon-1"><i class="fa fa-share-alt"></i></a></div></li>';
             
             
             $txt_whatsapp_share = urlencode("'".$db->f('ver_texto')."' - ".$liv_nome." ".$ver_capitulo.":".$db->f('ver_versiculo')." - Visite: www.bibliaparacasais.com.br");

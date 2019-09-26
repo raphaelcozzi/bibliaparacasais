@@ -45,9 +45,13 @@
             <a href="https://mobile.bibliaparacasais.com.br" class="header-logo font-14"></a>
             <a href="javascript:void(0);" class="header-title" style="margin-left: 50px !important;">{titulo_pagina}</a> 
            <!-- <a href="javascript:history.back();" class="header-icon header-icon-1 color-white"><i class="fa fa-arrow-left"></i></a>-->
-            <a href="#" data-menu="menu-share" class="header-icon header-icon-1"><i class="fas fa-share-alt" style="font-size:25px !important; margin-top:10px !important;"></i></a>
-            <a href="#" data-menu="menu-amigos"  class="header-icon header-icon-2"><i class="fas fa-users" style="font-size:25px !important; margin-top:10px !important;"></i></a>
-            <a href="{ABS_LINK}perfil" class="header-icon header-icon-3"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+
+            <a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+           
+           <a href="#" data-menu="menu-share" class="header-icon header-icon-3"><i class="fas fa-share-alt" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <a href="#" data-menu="menu-amigos"  class="header-icon header-icon-4"><i class="fas fa-users" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <a href="{ABS_LINK}perfil" class="header-icon header-icon-5" style="right:180px !important;"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>
         </div> 
         <div style="height:45px;"></div>
 <!-- END cabecalho -->
@@ -124,6 +128,7 @@
 
 <!-- BEGIN footer -->
 <script>
+
   document.getElementById('video_small').src='';
  
   </script>
@@ -437,8 +442,40 @@ function shareOriginal()
 <script type="text/javascript" src="{ABS_LINK}scripts/plugins.js"></script>
 <script type="text/javascript" src="{ABS_LINK}scripts/custom.js"></script>
 <script language="javascript">
+   $(document).ready(function(){
+               
+ $("#formartigo").on("submit", function () {
+    var hvalue = $('.ql-editor').html();
+    $(this).append("<textarea name='conteudo' style='display:none'>"+hvalue+"</textarea>");
+   });               
+               
+            $('#estados').change(function(){
+            $('#cidades').load('index.php?module=perfil&method=ajax_cidade&estado='+$('#estados').val() );
+
+            });
+            
+            
+            });
    
-   
+function fonte(e) {
+
+   var elemento = $(".versiculo");
+   var elemento2 = $(".content top-20");
+	var fonte = parseInt(elemento.css('font-size'));
+
+
+	if (e == 'a') {
+		fonte++;
+	}
+	if (e == 'd'){
+		fonte--;
+	}
+
+	elemento.css("fontSize", fonte);
+	elemento2.css("fontSize", fonte);
+	
+   }
+
    $('#vertelacheia').click(function(){
 
      document.getElementById("video_small").src="";
@@ -550,20 +587,7 @@ function mostraFormReply(formResposta)
 		document.getElementById(formResposta).style.display = "none";
    }
 }
- $(document).ready(function(){
-               
- $("#formartigo").on("submit", function () {
-    var hvalue = $('.ql-editor').html();
-    $(this).append("<textarea name='conteudo' style='display:none'>"+hvalue+"</textarea>");
-   });               
-               
-            $('#estados').change(function(){
-            $('#cidades').load('index.php?module=perfil&method=ajax_cidade&estado='+$('#estados').val() );
-
-            });
-            
-            
-            });
+ 
 function signOut() {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {

@@ -248,7 +248,7 @@
                            
 
                            <div class="form-button">
-                                <input type="submit" class="button bg-highlight button-m button-full round-small bottom-0 shadow-huge contactSubmitButton" value="Enviar para publicar"/>
+                                <input type="submit" class="button bg-highlight button-m button-full round-small bottom-0 shadow-huge" value="Enviar para publicar"/>
                             </div>
                         </fieldset>
                     </form>			
@@ -552,7 +552,7 @@
                            
 
                            <div class="form-button">
-                                <input type="submit" class="button bg-highlight button-m button-full round-small bottom-0 shadow-huge contactSubmitButton" value="Enviar para publicar"/>
+                                <input type="submit" class="button bg-highlight button-m button-full round-small bottom-0 shadow-huge" value="Enviar para publicar"/>
                             </div>
                         </fieldset>
                     </form>			
