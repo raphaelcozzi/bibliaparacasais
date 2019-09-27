@@ -54,6 +54,11 @@
             <div class="caption-overlay bg-black opacity-60"></div>
             <div class="caption-bg bg-26" style="background: url('{imagem_destaque}'); background-repeat: no-repeat; background-size: cover;"></div>
         </div>
+        <div style="float:right; white-space: nowrap; width: 80px; margin-top: 0px; position: absolute; z-index: 999; right: 30px; margin-top: 15px;">
+                        <div style="float: left;"><a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+                        <div style="float: right;"><a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+
+                         </div>
         <div class="content top-20">
            Em {dataCadastro} | {total_comentarios} coment&aacute;rios | {total_curtidas} curtidas | em {categoria} | Por {nome_usuario}  
            

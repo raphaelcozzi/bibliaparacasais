@@ -46,12 +46,12 @@
             <a href="javascript:void(0);" class="header-title" style="margin-left: 50px !important;">{titulo_pagina}</a> 
            <!-- <a href="javascript:history.back();" class="header-icon header-icon-1 color-white"><i class="fa fa-arrow-left"></i></a>-->
 
-            <a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a>
-            <a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <!--<a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a>-->
            
-           <a href="#" data-menu="menu-share" class="header-icon header-icon-3"><i class="fas fa-share-alt" style="font-size:25px !important; margin-top:10px !important;"></i></a>
-            <a href="#" data-menu="menu-amigos"  class="header-icon header-icon-4"><i class="fas fa-users" style="font-size:25px !important; margin-top:10px !important;"></i></a>
-            <a href="{ABS_LINK}perfil" class="header-icon header-icon-5" style="right:180px !important;"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+           <a href="#" data-menu="menu-share" class="header-icon header-icon-1"><i class="fas fa-share-alt" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <!--<a href="#" data-menu="menu-amigos"  class="header-icon header-icon-4"><i class="fas fa-users" style="font-size:25px !important; margin-top:10px !important;"></i></a>-->
+            <a href="{ABS_LINK}perfil" class="header-icon header-icon-2"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>
         </div> 
         <div style="height:45px;"></div>
 <!-- END cabecalho -->

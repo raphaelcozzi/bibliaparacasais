@@ -17,8 +17,8 @@ class pesquisa extends home
          {
             $listagem_pesquisa = '';
             $q = '';
-            $bibliaSelected = " ";
-            $artigosSelected = " checked='checked' ";
+            $bibliaSelected = " checked='checked' ";
+            $artigosSelected = " ";
             $botao_mais = '';
          }
          else
@@ -33,19 +33,19 @@ class pesquisa extends home
             $q = $termo;
             
 
-            if($_REQUEST['tipo'] == "artigos" || !isset($_REQUEST['tipo']))
-            {
-               $bibliaSelected = " ";
-               $artigosSelected = " checked='checked' ";
-               $artigos = "1";
-               $biblia = "0";
-            }
-            else
+            if($_REQUEST['tipo'] == "biblia" || !isset($_REQUEST['tipo']))
             {
                $bibliaSelected = " checked='checked' ";
                $artigosSelected = " ";
                $artigos = "0";
                $biblia = "1";
+            }
+            else
+            {
+               $bibliaSelected = " ";
+               $artigosSelected = " checked='checked' ";
+               $artigos = "1";
+               $biblia = "0";
             }
             
             

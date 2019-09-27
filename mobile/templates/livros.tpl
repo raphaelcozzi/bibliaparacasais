@@ -22,8 +22,13 @@
                     <a href="javascript:void(0);" onclick="document.pesquisa.submit();" class="disabled"><i class="fa fa-times-circle color-red2-dark"></i></a>
                     </form>
                 </div>
-            </div>
+            </div><div style="float:right; white-space: nowrap; width: 80px; margin-top: 0px; position: absolute; z-index: 999; right: 30px; margin-top: 10px;">
+                        <div style="float: left;"><a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+                        <div style="float: right;"><a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+
+                         </div>
            <div class="search-trending content-boxed shadow-large">
+              
                       <div class="content bottom-15">
                          <h5 class="bold">Velho Testamento</h5>
                       <ul class="bottom-15">
@@ -64,7 +69,11 @@
             <div class="caption-overlay bg-black opacity-70"></div>
             <div class="caption-bg bg-20"></div>
         </div>    
+<div style="float:right; white-space: nowrap; width: 80px; margin-top: 0px; position: absolute; z-index: 999; right: 30px; margin-top: 10px;">
+                        <div style="float: left;"><a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+                        <div style="float: right;"><a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
 
+                         </div>
            <div class="search-trending content-boxed shadow-large">
                       <div class="content bottom-15">
                          <h5 class="bold">Cap&iacute;tulos</h5>
@@ -109,10 +118,17 @@
             <div class="caption-overlay bg-black opacity-70"></div>
             <div class="caption-bg bg-20"></div>
         </div>    
+                        <div style="float:right; white-space: nowrap; width: 80px; margin-top: 0px; position: absolute; z-index: 999; right: 30px; margin-top: 10px;">
+                        <div style="float: left;"><a href="javascript:void(0);" onClick="fonte('d');"  class="header-icon header-icon-1"><i class="fas fa-search-minus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
+                        <div style="float: right;"><a href="javascript:void(0);" onClick="fonte('a');" class="header-icon header-icon-2"><i class="fas fa-search-plus" style="font-size:25px !important; margin-top:10px !important;"></i></a></div>
 
+                         </div>
            <div class="search-trending content-boxed shadow-large">
+              
                       <div class="content bottom-15">
+                         
                          <h5 class="bold">Vers&iacute;culos</h5>
+                         
                       <ul class="bottom-15">
                         {listagem_versiculos}
                       </ul>
