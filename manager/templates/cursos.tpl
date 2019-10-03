@@ -438,7 +438,40 @@ function ordena()
                             <!-- END EXAMPLE TABLE PORTLET-->
                         </div>
                     </div>                                                
-                                                
+<div class="row">
+                        <div class="col-md-12">
+                            <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                                                         <div class="portlet light bordered">
+                            
+                                <div class="portlet-title">
+                                    <div class="caption font-dark">
+                                        <i class="icon-list font-dark"></i>
+                                        <span class="caption-subject bold uppercase">Pessoas inscritas no curso</span>
+                                    </div>
+                                    
+                                   
+                                    <div class="tools"> </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <table class="table table-striped table-bordered table-hover nowrap" id="sample_3">
+                                        <thead>
+                                            <tr>
+                                               <th>Nome</th> 
+                                                <th>Email</th> 
+                                                <th>Origem</th> 
+                                                <th>Inscrição</th> 
+                                                <th>&nbsp;</th> 
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                         				{listagem_usuarios_inscritos}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- END EXAMPLE TABLE PORTLET-->
+                        </div>
+                    </div>                                                
                                                 
                     <div class="row">
                         <div class="col-md-12">

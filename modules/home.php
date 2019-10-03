@@ -1737,8 +1737,15 @@ class home
                $nome = $db->f("nome");
                $email_usuario = $db->f("email");
                $conteudo = $db->f("conteudo");
+               
+               $sql = "SELECT nome FROM usuarios WHERE id = ".$_SESSION['id']." ";
+               $db->query($sql,__LINE__,__FILE__);
+               $db->next_record();
+               $nomeUsuario = $db->f("nome");
+               
+               
 
-               $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "Alguem curtiu seu coment&aacute;<br><strong><p>Resumo:</p> ".substr($conteudo,0,200)."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
+               $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "".$nomeUsuario." curtiu seu coment&aacute;<br><strong><p>Resumo:</p> ".substr($conteudo,0,200)."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
                
                $this->email($email_usuario,"Alguem curtiu seu comentario - Biblia para casais",$corpo);               
                
@@ -2018,8 +2025,15 @@ class home
                $id = $db->f("id");
                $nome = $db->f("nome");
                $email_usuario = $db->f("email");
+               
+               $sql = "SELECT nome FROM usuarios WHERE id = ".$_SESSION['id']." ";
+               $db->query($sql,__LINE__,__FILE__);
+               $db->next_record();
+               $nomeUsuario = $db->f("nome");
+               
+               
 
-               $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "Alguem curtiu seu artigo.<br><br><strong>".  $tituloArtigo."</strong><br><br><p>Em: ".$categoria_nome."</p><p>Resumo:</p> ".substr($conteudo,0,200)."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/artigos/artigo/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
+               $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "".$nomeUsuario." curtiu seu artigo.<br><br><strong>".  $tituloArtigo."</strong><br><br><p>Em: ".$categoria_nome."</p><p>Resumo:</p> ".substr($conteudo,0,200)."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/artigos/artigo/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
                
                $this->email($email_usuario,"Alguem curtiu seu artigo - Biblia para casais",$corpo);               
                

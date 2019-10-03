@@ -456,7 +456,9 @@ class artigos extends home
                         {
 
                            $videoid = explode("v=",$video);
-                           $videoid = $videoid[1];
+                            $videoid = $videoid[1];
+                           $videoid = explode("&",$videoid);
+                           $videoid = $videoid[0];
 
 
                            $conteudo .= '<div style="padding:56.25% 0 0 0;position:relative;"><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/'.$videoid.'?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';

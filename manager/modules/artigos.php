@@ -510,6 +510,42 @@ class artigos  extends home
 
          }
 
+         /* Pessoas que curtiram o artigo */
+         
+         $sql = "SELECT
+                    usuarios.id AS usuario_id
+                  , usuarios.nome
+                  , usuarios.email
+                  , usuarios.origem
+                  FROM
+                  artigos_usuarios_curtidas_bookmarks
+                  INNER JOIN usuarios 
+                  ON (artigos_usuarios_curtidas_bookmarks.usuario_id = usuarios.id) 
+                  WHERE artigos_usuarios_curtidas_bookmarks.artigo_id = ".$artigo_id." 
+                  ORDER BY artigos_usuarios_curtidas_bookmarks.id DESC";
+			$db->query($sql,__LINE__,__FILE__);
+			$db->next_record();
+         
+			for($i = 0; $i < $db->num_rows(); $i++)
+			{
+				$usuario_id = $db->f("usuario_id");
+				$nome = $db->f("nome");
+				$email = $db->f("email");
+				$origem = $db->f("origem");
+            
+            
+				$listagem_usuarios_inscritos .= '<tr> 
+										<td>'.$nome.'</td>
+										<td>'.$email.'</td>
+										<td>'.$origem.'</td>
+            						<td><a target="_blank" href="contas/edita/'.$usuario_id.'" >Ver cadastro</a></td>
+									</tr>';
+            
+            
+   			$db->next_record();
+
+         }
+         
          
          $this->cabecalho();                                                                            
          $GLOBALS["base"]->template = new template();       
@@ -518,6 +554,7 @@ class artigos  extends home
          $GLOBALS["base"]->template->set_var('titulo' , $titulo);  
          $GLOBALS["base"]->template->set_var('video' , $video);  
          $GLOBALS["base"]->template->set_var('tags' , $tags);  
+         $GLOBALS["base"]->template->set_var('listagem_pessoas_curtiram' , $listagem_pessoas_curtiram);  
          $GLOBALS["base"]->template->set_var('listagem_comentarios' , $listagem_comentarios);  
          $GLOBALS["base"]->template->set_var('listagem_situacoes' , $listagem_situacoes);  
          $GLOBALS["base"]->template->set_var('nome_usuario' , $nome_usuario);  

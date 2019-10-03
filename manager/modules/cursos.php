@@ -499,6 +499,47 @@ class cursos  extends home
          }
          
          
+
+         /* Pessoas isncritas no curso */
+         
+         $sql = "SELECT
+                  usuarios.id as usuario_id
+                  , usuarios.nome
+                  , usuarios.email
+                  , usuarios.origem
+                  , DATE_FORMAT(cursos_usuarios.dataCadastro,'%d/%m/%Y') AS dataCadastro
+                  FROM
+                  cursos_usuarios
+                  INNER JOIN cursos 
+                  ON (cursos_usuarios.curso_id = cursos.id)
+                  INNER JOIN usuarios 
+                  ON (cursos_usuarios.usuario_id = usuarios.id) 
+                  WHERE cursos.id = ".$curso_id." ORDER BY cursos_usuarios.id DESC";
+			$db->query($sql,__LINE__,__FILE__);
+			$db->next_record();
+         
+			for($i = 0; $i < $db->num_rows(); $i++)
+			{
+				$usuario_id = $db->f("usuario_id");
+				$nome = $db->f("nome");
+				$email = $db->f("email");
+				$origem = $db->f("origem");
+				$dataInscricao = $db->f("dataCadastro");
+            
+            
+				$listagem_usuarios_inscritos .= '<tr> 
+										<td>'.$nome.'</td>
+										<td>'.$email.'</td>
+										<td>'.$origem.'</td>
+										<td>'.$dataInscricao.'</td>
+            						<td><a target="_blank" href="contas/edita/'.$usuario_id.'" >Ver cadastro</a></td>
+									</tr>';
+            
+            
+   			$db->next_record();
+
+         }
+
          $this->cabecalho();                                                                            
          $GLOBALS["base"]->template = new template();       
          $GLOBALS["base"]->template->set_var('duracao' , $duracao);  
@@ -506,6 +547,7 @@ class cursos  extends home
          $GLOBALS["base"]->template->set_var('curso_id' , $curso_id);  
          $GLOBALS["base"]->template->set_var('titulo' , $titulo);  
          $GLOBALS["base"]->template->set_var('tags' , $tags);  
+         $GLOBALS["base"]->template->set_var('listagem_usuarios_inscritos' , $listagem_usuarios_inscritos);  
          $GLOBALS["base"]->template->set_var('listagem_topicos' , $listagem_topicos);  
          $GLOBALS["base"]->template->set_var('listagem_comentarios' , $listagem_comentarios);  
          $GLOBALS["base"]->template->set_var('listagem_situacoes' , $listagem_situacoes);  
