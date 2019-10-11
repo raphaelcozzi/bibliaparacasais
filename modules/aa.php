@@ -12,7 +12,7 @@ class aa extends home
 			$db3 = new db();
 			
          $_SESSION['pagina'] = "livros";
-         $_SESSION['titulo_pagina'] = "Livros";
+         $_SESSION['titulo_pagina'] = "Almeida Revisada Imprensa Bíblica";
 			
 		$sql = "SELECT liv_id, liv_nome, liv_abreviado FROM livros WHERE liv_tes_id = 1 ORDER BY liv_posicao ASC";
 		$db->query($sql,__LINE__,__FILE__);

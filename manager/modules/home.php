@@ -42,8 +42,8 @@ class home
                usuarios.nome AS autor, 
                artigos.likes AS likes 
                FROM artigos, artigos_categorias, usuarios 
-               WHERE artigos.categoria_id = artigos_categorias.id
-               AND artigos.status = 0
+               WHERE /* artigos.categoria_id = artigos_categorias.id
+               AND */ artigos.status = 0
                AND artigos.usuario_id = usuarios.id 
                ORDER BY artigos.id ASC ";
 			$db->query($sql,__LINE__,__FILE__);

@@ -381,7 +381,8 @@ class login extends home
                 pais,
                 fb_id,
                 avatar,
-                origem) 
+                origem,
+				ip_origem) 
                VALUES ('".$nome."', 
                 '".$email."', 
                 MD5('".$senha."'), 
@@ -394,7 +395,8 @@ class login extends home
                 '".$pais."',
                 '".$fb_id."',
                 '".$fb_foto."',
-                'web/Facebook')";
+                'web/Facebook',
+				'".$_SERVER['REMOTE_ADDR']."')";
 
             $db->query($sql,__LINE__,__FILE__);
             $db->next_record();
@@ -586,7 +588,8 @@ class login extends home
                 pais,
                 google_id,
                 avatar,
-                origem) 
+                origem,
+				ip_origem) 
                VALUES ('".$nome."', 
                 '".$email."', 
                 MD5('".$senha."'), 
@@ -599,7 +602,8 @@ class login extends home
                 '".$pais."',
                 '".$google_id."',
                 '".$google_foto."',
-                'web/Google')";
+                'web/Google',
+				'".$_SERVER['REMOTE_ADDR']."')";
 
             $db->query($sql,__LINE__,__FILE__);
             $db->next_record();

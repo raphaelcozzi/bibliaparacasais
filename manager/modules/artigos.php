@@ -650,7 +650,7 @@ class artigos  extends home
 						   $nome = $db->f("nome");
 						   $email_usuario = $db->f("email");
 			
-							 $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "Um novo artigo foi publicado no portal.<br><br><strong>".  $titulo."</strong><br><br><p>Publicado em ".date("d/m/Y")."</p> <p>Em: ".$categoria_nome."</p><p>Resumo:</p> ".substr($conteudo,0,200)."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/artigos/artigo/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
+							 $corpo = $this->mailTemaple("Ol&aacute;, ".$nome.",","", "Um novo artigo foi publicado no portal.<br><br><strong>".  utf8_encode($titulo)."</strong><br><br><p>Publicado em ".date("d/m/Y")."</p> <p>Em: ".utf8_encode($categoria_nome)."</p><p>Resumo:</p> ".utf8_encode(substr($conteudo,0,200))."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/artigos/artigo/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
 						   
 						   $this->email($email_usuario,"Novo artigo publicado - Biblia para casais",$corpo);               
 						   

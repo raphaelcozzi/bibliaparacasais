@@ -64,8 +64,8 @@ class cadastro extends home
 	   
 		
 
-	   $sql = "INSERT INTO usuarios (nome, email, senha, estado, data_cadastro, status, cidade, alert_daily, endereco, pais, origem) 
-	   			VALUES ('".$nome."', '".$email."', MD5('".$senha."'), 7, NOW(), 1, 6779, 0, '".$endereco."','".$pais."','app')";
+	   $sql = "INSERT INTO usuarios (nome, email, senha, estado, data_cadastro, status, cidade, alert_daily, endereco, pais, origem, ip_origem) 
+	   			VALUES ('".$nome."', '".$email."', MD5('".$senha."'), 7, NOW(), 1, 6779, 0, '".$endereco."','".$pais."','app', '".$_SERVER['REMOTE_ADDR']."')";
       
 
 	   $db->query($sql,__LINE__,__FILE__);
