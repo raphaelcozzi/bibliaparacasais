@@ -1414,11 +1414,14 @@ function cabecalho()
 function sendPush($title, $msg, $link)
 {
    
+         set_time_limit(0);
+         ini_set("memory_limit",-1);
+
          @session_start();
          $db = new db();
 
    
-            $sql = "SELECT * FROM users WHERE user_android_token IS NOT NULL AND user_android_token <> ''";
+         $sql = "SELECT * FROM users WHERE user_android_token IS NOT NULL AND user_android_token <> '' and user_app_version <> 'null' ORDER BY date ASC";
          $db->query($sql,__LINE__,__FILE__);
          $db->next_record();
          
@@ -1427,23 +1430,20 @@ function sendPush($title, $msg, $link)
             $android_tokens = array();
             $x=0;
             $i=0;
-            if ( $db->num_rows() > 0) {
+            if( $db->num_rows() > 0) 
+            {
                 // output data of each row
-             for($i = 0; $i < $db->num_rows(); $i++) 
-             {
-              $android_tokens[$i][] = $db->f("user_android_token");
-              $x++;
-              // I need divide the array for 1000 push limit send in one time
-              if ($x % 800 == 0) {
-                $i++;
-              }  
-              
-              $db->next_record();
-              
+               for($j = 0; $j < $db->num_rows(); $j++) 
+               {
+                 $android_tokens[$i][] = $db->f("user_android_token");
+                 $x++;
+                // I need divide the array for 1000 push limit send in one time
+                 if ($x % 800 == 0) 
+                    $i++;
+
+                 $db->next_record();
+
                 }
-                
-                  
-                
             }
             
             $ip= $_SERVER['REMOTE_ADDR'];
@@ -1460,6 +1460,7 @@ function sendPush($title, $msg, $link)
             }
             if ($android_tokens != array()) {
                 $gcm=new GCM();
+                
                 
                 $data=array("title"=>$title,"description"=>$msg,"link"=>$link);
                 foreach ($android_tokens as $tokens) {
