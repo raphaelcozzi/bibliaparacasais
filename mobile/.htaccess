@@ -5,7 +5,7 @@ RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-d
 
 
-RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3&subid=$4 [NC,L]
+RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)\/([\w,.@:=!\?-]+)$ index.php?module=$1&method=$2&id=$3&subid=$4 [NC,L]
 RewriteRule ^([a-z]+)\/([a-z]+)\/([0-9-a-z]+)$ index.php?module=$1&method=$2&id=$3 [NC,L]
 RewriteRule ^([a-z]+)\/([a-z]+)$ index.php?module=$1&method=$2 [NC,L]
 

@@ -783,7 +783,7 @@ class cursos  extends home
 
                  $corpo = $this->mailTemaple("Ol&aacute;, ".utf8_decode($nome).",","", "Um novo curso foi publicado no portal.<br><br><strong>".  utf8_decode($titulo)."</strong><br><br><p>Publicado em ".date("d/m/Y")."</p> <p>Em: ".utf8_decode($categoria_nome)." </p><p>Resumo:</p>".utf8_decode(substr($conteudo,0,200))."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/cursos/curso/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
                
-               $this->email($email_usuario,"Novo curso publicado - Biblia para casais",$corpo);               
+                 $this->email($email_usuario,"Novo curso publicado - Biblia para casais",$corpo);               
                
                $db->next_record();
             }

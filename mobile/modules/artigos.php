@@ -328,9 +328,9 @@ class artigos extends home
                               }
                                        
                                        
-                              $box_social .= '<div style="float:right;"><!-- WHATSAPP --><a target="_blank" href="whatsapp://send?text='.urlencode($titulo.' - '.$conteudo.' - Compartilhado via bibliaparacasais.com.br').'" class="icon icon-xs icon-round bg-whatsapp regularbold"><i class="fab fa-whatsapp"></i></a>
+                              $box_social .= '<div style="float:right;"><!-- WHATSAPP --><a target="_blank" href="whatsapp://send?text='.urlencode($titulo.' - Compartilhado via bibliaparacasais.com.br').'" class="icon icon-xs icon-round bg-whatsapp regularbold"><i class="fab fa-whatsapp"></i></a>
                                       <!-- FACEBOOK --><a href="javascript:void(0);" onclick="shareFacebook(\'https://www.bibliaparacasais.com.br\',\'.$conteudo.\');" class="shareToFacebook icon icon-xs icon-round bg-facebook regularbold"><i class="fab fa-facebook-f"></i></a>
-                                      <!-- TWITTER --><a href="http://twitter.com/share?text='.substr($titulo.' - '.$conteudo,0,140).'&url=https://www.bibliaparacasais.com.br&counturl=URL&via='.$nome_usuario.'" target="_blank" class="shareToTwitter icon icon-xs icon-round bg-twitter regularbold"><i class="fab fa-twitter"></i></a></div>';
+                                      <!-- TWITTER --><a href="http://twitter.com/share?text='.substr($titulo,0,140).'&url=https://www.bibliaparacasais.com.br&counturl=URL&via='.$nome_usuario.'" target="_blank" class="shareToTwitter icon icon-xs icon-round bg-twitter regularbold"><i class="fab fa-twitter"></i></a></div>';
 
                           }
 
@@ -350,7 +350,7 @@ class artigos extends home
                            $_SESSION['videoid'] = '<iframe class="video_small"   id="video_small" src="https://www.youtube.com/embed/'.$videoid.'?controls=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay=1; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                            $_SESSION['videoidfull'] = '<iframe class="video_full"    id="video_full"  style="transform: rotate(90deg); -webkit-transform: rotate(90deg); -ms-transform: rotate(90deg); margin-top: 115px; margin-left: -110px;" width="560" height="60%" src="https://www.youtube.com/embed/'.$videoid.'?controls=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay=1; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
 
-                           $conteudo .= '<a href="#" data-menu="menu-video"><img src="images/play.png" style="width:100%; margin-top:10px; position:absolute; z-index:9999999;"><img src="https://img.youtube.com/vi/'.$videoid.'/0.jpg" width="100%"></a>';
+                           $conteudo .= '<a href="#" data-menu="menu-video"><img src="'.ABS_LINK.'images/play.png" style="width:100%; margin-top:10px; position:absolute; z-index:9999999999 !important;"><img src="https://img.youtube.com/vi/'.$videoid.'/0.jpg" width="100%"></a>';
                         }
 
                   }

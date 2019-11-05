@@ -587,7 +587,7 @@ function ordena()
 </style>                                        <div class="portlet light bordered">
                                             <div class="portlet-title">
                                                 <div class="caption">
-                                                    <i class="fa fa-list"></i>Editando o Curso: <strong>{titulo}</strong> </div>
+                                                    <i class="fa fa-list"></i>Novo Curso: </div>
                                             </div>
                                             <div class="portlet-body form">
                                                 <!-- BEGIN FORM-->

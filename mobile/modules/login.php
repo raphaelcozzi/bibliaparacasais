@@ -863,6 +863,214 @@ class login
 			$db->next_record();
 		}
       
+      
+      function lembrarsenha()
+      {
+
+         $db = new db();
+
+
+         if(isset($_SESSION['id']))
+         {
+            $this->javascriptRedirect(ABS_LINK."home");
+            die();
+         }
+
+         $_SESSION['pagina'] = "login";
+         $_SESSION['titulo_pagina'] = "Entrar ou Cadastrar-se";
+
+
+
+
+
+            $google_login_url = 'https://accounts.google.com/o/oauth2/v2/auth?scope=' . urlencode('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online';
+
+            $GLOBALS["base"]->template->set_var('google_login_url' ,$google_login_url);      
+            $GLOBALS["base"]->template->set_var("ANALYTICS",ANALYTICS);
+            $GLOBALS["base"]->template->set_var('msg_error' , '');
+
+            $GLOBALS["base"]->template->set_var('ABS_LINK' ,ABS_LINK);
+            $GLOBALS["base"]->template->set_var('msg' ,'');
+			
+            $GLOBALS["base"]->write_design_specific('login.tpl' , 'lembrarsenha');
+
+
+      }
+      
+      function redefinesenha()
+      {
+         
+         $db = new db();
+
+         if(isset($_SESSION['id']))
+         {
+            $this->javascriptRedirect(ABS_LINK."home");
+            die();
+         }
+
+
+         
+         if(isset($_REQUEST['key']) && $_REQUEST['key'] = "ss5Dd1s5g")
+         {         
+            /* Envia um e-mail com o link para redefinir a senha */
+            
+            $email = $this->blockrequest($_REQUEST['email']);
+            
+            $sql = "SELECT COUNT(id) AS total, nome FROM usuarios WHERE email = '".$email."' ";
+            $db->query($sql,__LINE__,__FILE__);
+            $db->next_record();
+            if($db->f("total") > 0)
+            {
+               
+               $nome = $db->f("nome");
+               
+               $randNumber = substr(md5(md5(time()).rand(6,9)),0,10);
+
+               $sql = "UPDATE usuarios SET temp_key = '".$randNumber."' WHERE email = '".$email."' LIMIT 1";
+               $db->query($sql,__LINE__,__FILE__);
+               $db->next_record();
+
+               $linkRedefinir = "https://mobile.bibliaparacasais.com.br/login/novasenha/".$randNumber."/".$email;
+
+               $msg = "Ol&aacute;, ".$nome.", voc&ecirc; solicitou a redefini&ccedil;&atilde;o da sua senha.<br>";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= "Para definir uma nova senha, clique no link a seguir, ou copie e cole no seu navegador.";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= "<strong><a href=".$linkRedefinir.">".$linkRedefinir."</a></strong>";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= "Caso n&atilde;o tenha solicitado redefinir sua senha, desconsidere este e-mail e altere a sua senha no seu perfil.";
+               $msg .= "<br>";
+               $msg .= "Atenciosamente,<br>Equipe ".TITULO_SISTEMA."";
+               $msg .= "<br>";
+               $msg .= "Copyright 2019 - ".date("Y")." ".TITULO_SISTEMA."";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= ABS_LINK;
+
+
+               $subject = "Redefinir sua senha - ".TITULO_SISTEMA." ";
+
+               $this->email($email, $subject, $msg);
+               $GLOBALS["base"]->template->set_var('email' ,$email);     
+               
+               $_SESSION["email_solicitado"] = $email;
+
+               header("Location: ".ABS_LINK."/login/senhaenviada");
+            }
+            else 
+            {
+               header("Location: ".ABS_LINK."/login");
+               die();
+            }
+         }
+         
+         
+      }
+      
+      function senhaenviada()
+      {
+         
+         $db = new db();
+
+         if(isset($_SESSION['id']))
+         {
+            $this->javascriptRedirect(ABS_LINK."home");
+            die();
+         }
+
+            $email = $_SESSION["email_solicitado"];
+
+            $_SESSION['pagina'] = "login";
+            $_SESSION['titulo_pagina'] = "Entrar ou Cadastrar-se";
+
+            $google_login_url = 'https://accounts.google.com/o/oauth2/v2/auth?scope=' . urlencode('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online';
+
+            $GLOBALS["base"]->template->set_var('google_login_url' ,$google_login_url);      
+            $GLOBALS["base"]->template->set_var("ANALYTICS",ANALYTICS);
+            $GLOBALS["base"]->template->set_var('msg_error' , '');
+
+            $GLOBALS["base"]->template->set_var('email' ,$email);      
+            $GLOBALS["base"]->template->set_var('ABS_LINK' ,ABS_LINK);
+            $GLOBALS["base"]->template->set_var('msg' ,'');
+			
+            $GLOBALS["base"]->write_design_specific('login.tpl' , 'senhaenviada');
+      }
+
+      function novasenha()
+      {
+         
+         $db = new db();
+
+         if(isset($_SESSION['id']))
+         {
+            $this->javascriptRedirect(ABS_LINK."home");
+            die();
+         }
+
+            $key = $_REQUEST["id"];
+            $email = $_REQUEST["subid"];
+
+            $sql = "SELECT COUNT(id) AS total, nome FROM usuarios WHERE email = '".$email."' AND temp_key = '".$key."' ";
+            $db->query($sql,__LINE__,__FILE__);
+            $db->next_record();
+            if($db->f("total") > 0)
+            {
+               
+               $nome = $db->f("nome");
+               
+               $novaSenha = substr(md5(md5(time()).rand(6,9)),0,10);
+               
+               $sql = "UPDATE usuarios SET senha = MD5('".$email."'), temp_key = ''  WHERE temp_key = '".$key."' AND email = '".$email."' LIMIT 1";
+               $db->query($sql,__LINE__,__FILE__);
+               $db->next_record();
+               
+               $msg = "Ol&aacute;, ".$nome.", sua senha foi redefinida com sucesso.<br>";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= "Nova senha: ".$novaSenha;
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= "Caso n&atilde;o tenha solicitado redefinir sua senha, desconsidere este e-mail e altere a sua senha no seu perfil.";
+               $msg .= "<br>";
+               $msg .= "Atenciosamente,<br>Equipe ".TITULO_SISTEMA."";
+               $msg .= "<br>";
+               $msg .= "Copyright 2019 - ".date("Y")." ".TITULO_SISTEMA."";
+               $msg .= "<br>";
+               $msg .= "<br>";
+               $msg .= ABS_LINK;
+
+
+               $subject = "Sua senha foi redefinida com sucesso - ".TITULO_SISTEMA." ";
+
+               $this->email($email, $subject, $msg);
+               
+            }
+
+
+
+
+
+
+            $_SESSION['pagina'] = "login";
+            $_SESSION['titulo_pagina'] = "Entrar ou Cadastrar-se";
+
+            $google_login_url = 'https://accounts.google.com/o/oauth2/v2/auth?scope=' . urlencode('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online';
+
+            $GLOBALS["base"]->template->set_var('google_login_url' ,$google_login_url);      
+            $GLOBALS["base"]->template->set_var("ANALYTICS",ANALYTICS);
+            $GLOBALS["base"]->template->set_var('msg_error' , '');
+
+            $GLOBALS["base"]->template->set_var('email' ,$email);      
+            $GLOBALS["base"]->template->set_var('ABS_LINK' ,ABS_LINK);
+            $GLOBALS["base"]->template->set_var('msg' ,'');
+			
+            $GLOBALS["base"]->write_design_specific('login.tpl' , 'novasenha');
+      }
+      
+      
  }
 
 ?>

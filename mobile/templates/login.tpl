@@ -65,7 +65,7 @@
                 <div class="divider bottom-15"></div>
                 
                 <div>
-                    <!--<a href="" class="text-right font-11 color-theme opacity-50">Esqueceu a senha?</a>-->
+                    <a href="login/lembrarsenha" class="text-right font-14 color-theme opacity-50">Esqueceu a senha?</a>
                 </div>
                 <div class="clear"></div>
 
@@ -161,3 +161,218 @@ function shareFacebook(url,titulo){
    
 <!-- END login -->
 
+
+<!-- BEGIN lembrarsenha -->
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta property="og:url"           content="https://bibliaparacasais.com.br/" />
+<meta property="og:type"          content="website" />
+<meta property="og:title"         content="In&iacute;cio - Bíblia para Estudo de Casais" />
+<meta property="og:description"   content="Bíblia para Estudo de Casais" />
+
+<title>B&iacute;blia para casais</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i|Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/style.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/framework.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}fonts/css/fontawesome-all.min.css">
+<link rel="shortcut icon" href="{ABS_LINK}favicon.ico" type="image/x-icon" />
+
+</head>
+    
+<body class="theme-light" data-background="none" data-highlight="red2">
+<div id="page">
+        
+    <div id="page-preloader">
+        <div class="loader-main"><div class="preload-spinner border-highlight"></div></div>
+    </div>
+     
+<!-- <div class="header header-fixed header-logo-center">-->
+ <!--  <a class="header-title">B&iacute;blia Para Casais</a>-->
+		<!--<a href="#" class="back-button header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>-->
+		<!--<a href="#" data-toggle-theme-switch class="header-icon header-icon-4"><i class="fas fa-lightbulb"></i></a>-->
+	<!-- </div>-->
+   <form class="sidebar-login" action="{ABS_LINK}login/redefinesenha" method="post" name="lembrarsenha">
+ <div class="page-content header-clear-medium">   
+        <center><img src="{ABS_LINK}logo.png" width="100" style="margin-top: -30px;"></center>
+            <div class="content-boxed left-40 right-40">
+                <div class="content top-10 bottom-10">
+                    <h1 class="center-text uppercase ultrabold fa-2x">LEMBRAR SENHA</h1>
+                    <p class="center-text color-highlight font-11 under-heading bottom-30">
+                       Digite a seguir o seu e-mail para redefinir a sua senha.
+                    </p>
+                    <div class="input-style has-icon input-style-1 input-required">
+                        <i class="input-icon fa fa-at"></i>
+                        <span>E-mail</span>
+                        <input type="email" placeholder="Email"  name="email" required="required">
+                        <input type="hidden" name="key" value="ss5Dd1s5g">
+                    </div>         
+                    <div class="clear"></div>
+                     <button type="submit" class="button button-full button-m shadow-large button-round-small bg-green1-dark top-30 bottom-0" style="width:100%;">RECUPERAR SENHA</button>
+                    <div class="divider bottom-20"></div>
+                    <div class="bottom-20">
+                       <a href="{ABS_LINK}login" class="back-button center-text font-11 color-theme">Se preferir, clique aqui para entrar.</a>
+                    </div>
+ 
+                </div>
+            </div>
+
+                    
+    </div>
+   </form>
+
+   
+   
+   </div>
+<script type="text/javascript" src="{ABS_LINK}scripts/jquery.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/plugins.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/custom.js"></script>
+
+</body>
+   
+   
+
+<!-- END lembrarsenha -->
+
+<!-- BEGIN senhaenviada -->
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta property="og:url"           content="https://bibliaparacasais.com.br/" />
+<meta property="og:type"          content="website" />
+<meta property="og:title"         content="In&iacute;cio - Bíblia para Estudo de Casais" />
+<meta property="og:description"   content="Bíblia para Estudo de Casais" />
+
+<title>B&iacute;blia para casais</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i|Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/style.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/framework.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}fonts/css/fontawesome-all.min.css">
+<link rel="shortcut icon" href="{ABS_LINK}favicon.ico" type="image/x-icon" />
+
+</head>
+    
+<body class="theme-light" data-background="none" data-highlight="red2">
+<div id="page">
+        
+    <div id="page-preloader">
+        <div class="loader-main"><div class="preload-spinner border-highlight"></div></div>
+    </div>
+     
+<!-- <div class="header header-fixed header-logo-center">-->
+ <!--  <a class="header-title">B&iacute;blia Para Casais</a>-->
+		<!--<a href="#" class="back-button header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>-->
+		<!--<a href="#" data-toggle-theme-switch class="header-icon header-icon-4"><i class="fas fa-lightbulb"></i></a>-->
+	<!-- </div>-->
+   <form class="sidebar-login" action="{ABS_LINK}login/redefinesenha" method="post" name="lembrarsenha">
+ <div class="page-content header-clear-medium">   
+        <center><img src="{ABS_LINK}logo.png" width="100" style="margin-top: -30px;"></center>
+            <div class="content-boxed left-40 right-40">
+                <div class="content top-10 bottom-10">
+                    <h1 class="center-text uppercase ultrabold fa-2x">LEMBRAR SENHA</h1>
+                    <p class="center-text color-highlight font-16 under-heading bottom-30 top-60">
+                      Um email foi enviado para <strong>{email}</strong>, contendo o link para que sua senha seja redefinida.
+                    </p>
+         
+                    <div class="clear"></div>
+                                         <div class="divider bottom-20"></div>
+                    <div class="bottom-20">
+                       
+                       <a href="{ABS_LINK}login"><button type="button" class="button button-full button-m shadow-large button-round-small bg-green1-dark top-30 bottom-0" style="width:100%;">CLIQUE AQUI PARA FAZER O LOGIN</button></a>
+                    </div>
+ 
+                </div>
+            </div>
+
+                    
+    </div>
+   </form>
+
+   
+   
+   </div>
+<script type="text/javascript" src="{ABS_LINK}scripts/jquery.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/plugins.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/custom.js"></script>
+
+</body>
+   
+   
+
+<!-- END senhaenviada -->
+
+<!-- BEGIN novasenha -->
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta property="og:url"           content="https://bibliaparacasais.com.br/" />
+<meta property="og:type"          content="website" />
+<meta property="og:title"         content="In&iacute;cio - Bíblia para Estudo de Casais" />
+<meta property="og:description"   content="Bíblia para Estudo de Casais" />
+
+<title>B&iacute;blia para casais</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i|Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/style.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}styles/framework.css">
+<link rel="stylesheet" type="text/css" href="{ABS_LINK}fonts/css/fontawesome-all.min.css">
+<link rel="shortcut icon" href="{ABS_LINK}favicon.ico" type="image/x-icon" />
+
+</head>
+    
+<body class="theme-light" data-background="none" data-highlight="red2">
+<div id="page">
+        
+    <div id="page-preloader">
+        <div class="loader-main"><div class="preload-spinner border-highlight"></div></div>
+    </div>
+     
+<!-- <div class="header header-fixed header-logo-center">-->
+ <!--  <a class="header-title">B&iacute;blia Para Casais</a>-->
+		<!--<a href="#" class="back-button header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>-->
+		<!--<a href="#" data-toggle-theme-switch class="header-icon header-icon-4"><i class="fas fa-lightbulb"></i></a>-->
+	<!-- </div>-->
+   <form class="sidebar-login" action="{ABS_LINK}login/redefinesenha" method="post" name="lembrarsenha">
+ <div class="page-content header-clear-medium">   
+        <center><img src="{ABS_LINK}logo.png" width="100" style="margin-top: -30px;"></center>
+            <div class="content-boxed left-40 right-40">
+                <div class="content top-10 bottom-10">
+                    <h1 class="center-text uppercase ultrabold fa-2x">SENHA REDEFINIDA</h1>
+                    <p class="center-text color-highlight font-16 under-heading bottom-30 top-60">
+                       Sua nova senha foi redefinida com sucesso.<br>Um e-mail foi enviado para você contendo sua nova senha.<br>Para alterar, basta acesaar o seu perfil.
+                    </p>
+         
+                    <div class="clear"></div>
+                                         <div class="divider bottom-20"></div>
+                    <div class="bottom-20">
+                       
+                       <a href="{ABS_LINK}login"><button type="button" class="button button-full button-m shadow-large button-round-small bg-green1-dark top-30 bottom-0" style="width:100%;">CLIQUE AQUI PARA FAZER O LOGIN</button></a>
+                    </div>
+ 
+                </div>
+            </div>
+
+                    
+    </div>
+   </form>
+
+   
+   
+   </div>
+<script type="text/javascript" src="{ABS_LINK}scripts/jquery.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/plugins.js"></script>
+<script type="text/javascript" src="{ABS_LINK}scripts/custom.js"></script>
+
+</body>
+   
+   
+
+<!-- END novasenha -->
