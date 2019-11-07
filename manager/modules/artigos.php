@@ -796,7 +796,7 @@ class artigos  extends home
              *  Envia os emails de notificação informando que um novo artigo foi publicado
              */
             
-            $sql = "SELECT id, nome, email FROM usuarios WHERE alert_daily = 1 ORDER BY id ASC LIMIT 1 ";
+            $sql = "SELECT id, nome, email FROM usuarios WHERE alert_daily = 1 ORDER BY id ASC";
             $db->query($sql,__LINE__,__FILE__);
             $db->next_record();
             for($i = 0; $i < $db->num_rows(); $i++)
@@ -808,7 +808,7 @@ class artigos  extends home
                  $corpo = $this->mailTemaple("Ol&aacute;, ".utf8_decode($nome).",","", "Um novo artigo foi publicado no portal.<br><br><strong>".  utf8_decode($titulo)."</strong><br><br><p>Publicado em ".date("d/m/Y")."</p> <p>Em: ".utf8_decode($categoria_nome)."</p><p>Resumo:</p> ".utf8_decode(substr($conteudo,0,200))."(..)<br><br>","<a href=\"https://bibliaparacasais.com.br/artigos/artigo/".$slug."\" target=\"_blank\" align=\"center\" class=\"call_to_action_button\">Veja mais</a>");
                
                  $this->email($email_usuario,"Novo artigo publicado - Biblia para casais",$corpo);
-                sleep(1);
+                //sleep(1);
                 
                $db->next_record();
             }
