@@ -138,7 +138,7 @@ class cadastro extends home
       
 	   
 	 //  header("Location: ".ABS_LINK."/cadastro/confirm");
-      header("Location: ".ABS_LINK."/cadastro/continuar");
+      header("Location: ".ABS_LINK."cadastro/continuar");
 		
 	}
 	
@@ -236,7 +236,8 @@ class cadastro extends home
       @session_start();
 
       $_SESSION['pagina'] = "cadastro";
-      if(!isset($_SESSION['id']))
+      
+      if(isset($_SESSION['id']))
       {
          header("Location ".ABS_LINK."home");
          die();

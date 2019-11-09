@@ -199,7 +199,7 @@ function shareFacebook(url,titulo){
        <center><img src="{ABS_LINK}logo.png" width="100" style="margin-top: -30px;"></center><br><br>
             <center> <h1>Parab&eacute;ns! Seu cadastro foi feito com sucesso.</h1></center>
            <center>  <p>Um e-mail de confirma&ccedil;&atilde;o foi enviado para voc&ecirc;.</p></center>
-            <a href="login" class="button button-full button-m shadow-large button-round-small bg-green1-dark top-30 bottom-30">CONTINUAR</a>
+            <a href="{ABS_LINK}login" class="button button-full button-m shadow-large button-round-small bg-green1-dark top-30 bottom-30">CONTINUAR</a>
    
     </div>                           
    </div>
