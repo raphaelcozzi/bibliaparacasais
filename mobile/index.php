@@ -17,6 +17,8 @@ if(LOADING_BAR == 1)
 
 require_once(CONFIG_PATH."/inc/base.php");
 require_once(CONFIG_PATH."/int/".CONFIG_LANG.".php");
+
+/*
 // Verifica se o cookie de sessão existe e redireciona
 if(isset($_COOKIE['bibliapcid']) && $_COOKIE['bibliapcid'] != "" && !$_SESSION['id'])
 {
@@ -36,7 +38,7 @@ if(isset($_COOKIE['bibliapcid']) && $_COOKIE['bibliapcid'] != "" && !$_SESSION['
       if($db99->num_rows() > 0)
       {
             /* Guarda em sessão todos os parâmetros utéis do usuário */
-            $_SESSION['logado'] = "rRJ4fvbvtvgcf";
+      /*      $_SESSION['logado'] = "rRJ4fvbvtvgcf";
             $_SESSION['id'] = $db99->f("id");		
             $_SESSION['nome'] = $db99->f("nome");		
             $_SESSION['email'] = $db99->f("email");
@@ -96,10 +98,9 @@ if(isset($_COOKIE['bibliapcid']) && $_COOKIE['bibliapcid'] != "" && !$_SESSION['
    }
    */
    
-   
+/*   
 }
-
-
+*/
 if(!$_REQUEST['module'] && !$_REQUEST['method'])
 {
 	if($_SESSION['logged'] == "43628bbbb8613ac94fd61bd46aab5a45314s" || $_SESSION['logado'] == "rRJ4fvbvtvgcf")
@@ -123,7 +124,7 @@ if(!$_REQUEST['module'] && !$_REQUEST['method'])
 */
 
 		// VERIFICA SE O USUÁRIO ESTÁ LOGADO
-
+/*
 		if($_REQUEST['module'] && $_REQUEST['method'])
 			if($_REQUEST['module'] != "login" && $_REQUEST['module'] != "cadastro")
 			{
@@ -132,7 +133,7 @@ if(!$_REQUEST['module'] && !$_REQUEST['method'])
 						$check = new login();
 						$check->check_login();
 			}
-
+*/
 
 	/***************************************************************************/
 	//                                                                         //

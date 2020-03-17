@@ -42,7 +42,7 @@
      {msg}
       <div class="header header-static header-logo-left demo-shadow bottom-50" style="position:fixed !important; margin-bottom: 150px;">
            
-            <a href="https://mobile.bibliaparacasais.com.br" class="header-logo font-14"></a>
+            <a href="https://bibliaparacasais.com.br" class="header-logo font-14"></a>
             <a href="javascript:void(0);" class="header-title" style="margin-left: 50px !important;">{titulo_pagina}</a> 
            <!-- <a href="javascript:history.back();" class="header-icon header-icon-1 color-white"><i class="fa fa-arrow-left"></i></a>-->
 
@@ -51,7 +51,7 @@
            
            <a href="#" data-menu="menu-share" class="header-icon header-icon-1"><i class="fas fa-share-alt" style="font-size:25px !important; margin-top:10px !important;"></i></a>
             <!--<a href="#" data-menu="menu-amigos"  class="header-icon header-icon-4"><i class="fas fa-users" style="font-size:25px !important; margin-top:10px !important;"></i></a>-->
-            <a href="{ABS_LINK}perfil" class="header-icon header-icon-2"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>
+            <!--<a href="{ABS_LINK}perfil" class="header-icon header-icon-2"><i class="fa fa-user-circle" style="font-size:25px !important; margin-top:10px !important;"></i></a>-->
         </div> 
         <div style="height:45px;"></div>
 <!-- END cabecalho -->
@@ -72,7 +72,7 @@
                     <a href="javascript:void(0);" onclick="document.pesquisa.submit();" class="disabled"><i class="fa fa-times-circle color-red2-dark"></i></a>
                     </form>
                 </div>
-            </div>
+            </div> 
 
 <div class="content">
    <!-- VERSICULO DO DIA -->
@@ -262,22 +262,23 @@ function shareOriginal()
             <div class="divider top-25 bottom-0"></div>
             <div class="link-list link-list-2 link-list-long-border">
                
-                <a href="{ABS_LINK}perfil" data-menu="menu-backgrounds" class="no-border">
+             <!--   <a href="{ABS_LINK}perfil" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-user bg-blue2-dark color-white round-tiny"></i>
                     <span>Perfil</span>
-                </a>  
+                </a>  -->
                
                 <a href="{ABS_LINK}home/versoes" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-book bg-blue2-dark color-white round-tiny"></i>
                     <span>Vers&atilde;o</span>
                     
                 </a>  
-
+<!--
                 <a href="{ABS_LINK}pesquisa" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-search bg-blue2-dark color-white round-tiny"></i>
                     <span>Pesquisa</span>
                     
                 </a>  
+
 
                 <a href="{ABS_LINK}perfil/artigos" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-sticky-note bg-blue2-dark color-white round-tiny"></i>
@@ -315,7 +316,7 @@ function shareOriginal()
                     <span>Contato</span>
                     
                 </a>  
-
+-
                 <a href="{ABS_LINK}termosdeuso" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-info bg-blue2-dark color-white round-tiny"></i>
                     <span>Termos de Uso</span>
@@ -329,12 +330,14 @@ function shareOriginal()
                     
                 </a>  -->
                     
-                    
+                 <!--   
                 <a href="{ABS_LINK}login/logout" data-menu="menu-backgrounds" class="no-border">
                     <i class="fa fa-times bg-blue2-dark color-white round-tiny"></i>
                     <span>Sair</span>
                     
                 </a>  
+                 
+                 -->
 
                
             </div>

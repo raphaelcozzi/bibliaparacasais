@@ -613,7 +613,7 @@ class home
 			$uri = "";
          
          
-      $menu .= ' <a href="home" ';
+      $menu .= ' <a href="https://www.bibliaparacasais.com.br" ';
       
       if($_REQUEST['module'] == "home" || $uri == "")
          $menu .= ' class="active-nav" ';
@@ -628,7 +628,7 @@ class home
        
        $menu .= '><i class="fa fa-book"></i><span>B&iacute;blia</span></a>';
        
-       $menu .= '<a href="cursos" ';
+       $menu .= '<a href="https://www.bibliaparacasais.com.br/cursos" ';
        
       if($_REQUEST['module'] == "cursos")
          $menu .= ' class="active-nav" ';
@@ -636,7 +636,7 @@ class home
        
        $menu .= '><i class="fa fa-graduation-cap"></i><span>Cursos</span></a>';
        
-       $menu .= '<a href="artigos" ';
+       $menu .= '<a href="https://www.bibliaparacasais.com.br/artigos" ';
        
        
       if($_REQUEST['module'] == "artigos")
@@ -645,7 +645,7 @@ class home
        
        $menu .= '><i class="fa fa-sticky-note"></i><span>Artigos</span></a>';
        
-       $menu .= '<a href="#" data-menu="menu-settings"><i class="fa fa-bars"></i><span>Mais</span></a>';
+      $menu .= '<a href="#" data-menu="menu-settings"><i class="fa fa-bars"></i><span>Mais</span></a>';
 
 	
 
